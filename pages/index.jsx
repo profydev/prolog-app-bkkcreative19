@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { Routes } from "@config/routes";
 import Link from "next/link";
 import { useState } from "react";
-import ReactDOM from "react-dom";
 import Icon from "../public/icons/mail.svg";
 import Image from "next/image";
 
@@ -119,6 +118,10 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
+// const Hero = () => {
+
+// }
+
 const Modal = (props) => {
   if (!props.show) {
     return null;
@@ -187,6 +190,7 @@ const IssuesPage = () => {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/icons/message.svg" alt="Contact" />
       </ContactButton>
+      {/* <Hero /> */}
       <Modal onClose={() => setShow(false)} show={show} />
     </div>
   );
