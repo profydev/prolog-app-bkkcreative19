@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Routes } from "@config/routes";
+import Link from "next/link";
 
 const Header = styled.header`
   width: 100%;
@@ -28,13 +29,58 @@ const ContactButton = styled.button`
   }
 `;
 
+const DashboardButton = styled.button`
+  background: #7f56d9;
+  padding: 0.6em 1.2em;
+  border: 1px solid #7f56d9;
+  box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  /* identical to box height, or 150% */
+  cursor: pointer;
+
+  /* White */
+
+  color: #ffffff;
+`;
+
+const NavList = styled.ul`
+  list-style: none;
+  display: flex;
+  gap: 2.5em;
+`;
+const NavListItem = styled.a`
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #667085;
+`;
+
 const IssuesPage = () => {
   return (
     <div>
       <Header>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/icons/logo-large.svg" alt="Prolog logo" />
-        <a href={Routes.projects}>Dashboard</a>
+        <NavList>
+          <Link href={`/`}>
+            <NavListItem>Home</NavListItem>
+          </Link>
+          <Link href={`/products`}>
+            <NavListItem>Products</NavListItem>
+          </Link>
+          <Link href={`/documentation`}>
+            <NavListItem>Documentation</NavListItem>
+          </Link>
+          <Link href={`/pricing`}>
+            <NavListItem>Pricing</NavListItem>
+          </Link>
+        </NavList>
+        <Link href={Routes.projects}>
+          <DashboardButton>Open Dashboard</DashboardButton>
+        </Link>
       </Header>
       <ContactButton
         onClick={() =>

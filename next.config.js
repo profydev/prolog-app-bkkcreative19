@@ -7,6 +7,7 @@ const nextConfig = {
   images: {
     domains: ["prolog-api.profy.dev"],
   },
+  swcMinify: false,
 };
 
 module.exports = nextConfig;
