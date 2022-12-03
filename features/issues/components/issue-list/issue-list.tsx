@@ -95,7 +95,6 @@ export function IssueList() {
     {} as Record<string, ProjectLanguage>
   );
   const { items, meta } = issuesPage.data || {};
-
   return (
     <Container>
       <Table>
