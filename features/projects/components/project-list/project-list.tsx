@@ -30,6 +30,8 @@ export function ProjectList() {
     return <div>Error: {error.message}</div>;
   }
 
+  console.log(data);
+
   return (
     <List>
       {data?.map((project) => (
