@@ -130,6 +130,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <Badge color={statusColors[changeSomething(status)]}>
               {capitalize(changeSomething(status))}
             </Badge>
+            {/* <Badge color={statusColors[status]}>{capitalize(status)}</Badge> */}
           </Status>
         </InfoContainer>
       </TopContainer>
