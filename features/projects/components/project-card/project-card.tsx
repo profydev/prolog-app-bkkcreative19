@@ -106,6 +106,7 @@ const ViewIssuesAnchor = styled.a`
 
 export function ProjectCard({ project }: ProjectCardProps) {
   const { name, language, numIssues, numEvents24h, status } = project;
+
   return (
     <Container>
       <TopContainer>
@@ -126,7 +127,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <IssuesNumber>{numEvents24h}</IssuesNumber>
           </Issues>
           <Status>
-            <Badge color={statusColors[status]}>{capitalize(status)}</Badge>
+            <Badge color={statusColors[changeSomething(status)]}>
+              {capitalize(changeSomething(status))}
+            </Badge>
           </Status>
         </InfoContainer>
       </TopContainer>
@@ -137,4 +140,14 @@ export function ProjectCard({ project }: ProjectCardProps) {
       </BottomContainer>
     </Container>
   );
+}
+
+function changeSomething(status: string) {
+  if (status === "error") {
+    return "critical";
+  }
+  if (status === "info") {
+    return "stable";
+  }
+  return "warning";
 }
