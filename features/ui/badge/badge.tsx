@@ -72,6 +72,7 @@ export function Badge({
   size = BadgeSize.md,
   color = BadgeColor.primary,
 }: BadgeProps) {
+  console.log(color);
   return (
     <Container size={size} color={color}>
       {children}
