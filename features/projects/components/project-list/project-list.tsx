@@ -1,7 +1,9 @@
 import styled from "styled-components";
+import { CSSProperties } from "react";
 import { ProjectCard } from "../project-card";
 import { useProjects } from "../../api/use-projects";
 import { breakpoint, space } from "@styles/theme";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const List = styled.ul`
   display: grid;
@@ -18,11 +20,24 @@ const List = styled.ul`
   }
 `;
 
+const override: CSSProperties = {
+  display: "block",
+  margin: "129px auto",
+  // borderColor: "#7F56D9",
+  color: "#7F56D9",
+};
+
 export function ProjectList() {
   const { data, isLoading, isError, error } = useProjects();
 
   if (isLoading) {
-    return <div>Loading</div>;
+    return (
+      <ClipLoader
+        cssOverride={override}
+        size={58}
+        // aria-label="Loading Spinner"
+      />
+    );
   }
 
   if (isError) {
