@@ -206,3 +206,7 @@ export function Button2({
     </StyledButton>
   );
 }
+
+Button2.defaultProps = {
+  icon: "leading",
+};
