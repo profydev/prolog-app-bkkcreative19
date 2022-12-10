@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Routes } from "@config/routes";
+import { Button } from "../features/ui/button";
 
 const Header = styled.header`
   width: 100%;
