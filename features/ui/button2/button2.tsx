@@ -1,7 +1,6 @@
 import styled, { css } from "styled-components";
 
-import { breakpoint, color, space, zIndex } from "@styles/theme";
-import { create } from "lodash";
+import { color } from "@styles/theme";
 
 export interface ButtonProps extends React.ComponentPropsWithoutRef<"button"> {
   variant?: "secondary" | "primary" | "gray" | "empty" | "empty-gray" | "error";
