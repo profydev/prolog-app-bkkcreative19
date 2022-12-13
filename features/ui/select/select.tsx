@@ -1,7 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
 import { color } from "@styles/theme";
+import { useDetectClickOutside } from "react-detect-click-outside";
 
 export interface SelectProps extends React.ComponentPropsWithoutRef<"div"> {
   options: Array<string>;
@@ -11,6 +12,9 @@ export interface SelectProps extends React.ComponentPropsWithoutRef<"div"> {
   error?: string;
   hasError?: boolean;
   disabled?: boolean;
+  placeholder?: string;
+  ref?: any;
+  onChangee(name: string): any;
 }
 
 const regular = (p: DropDownContainerProps) => {
@@ -100,7 +104,7 @@ const Icon = styled.img`
   display: block;
 `;
 
-const DownArrow = styled.img`
+const Arrow = styled.img`
   cursor: pointer;
   margin-left: auto;
 `;
@@ -113,12 +117,11 @@ const DropDownListContainer = styled("div")`
 `;
 
 const DropDownList = styled("ul")`
-  padding: 14px;
   margin: 0;
   background: #ffffff;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  padding: 0;
   box-sizing: border-box;
   box-shadow: 0px 12px 16px -4px rgba(16, 24, 40, 0.1),
     0px 4px 6px -2px rgba(16, 24, 40, 0.05);
@@ -130,6 +133,22 @@ const DropDownList = styled("ul")`
 const ListItem = styled("li")`
   list-style: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+
+  &:hover {
+    background: #f4ebff;
+
+    & img {
+      display: flex;
+    }
+  }
+
+  & img {
+    display: none;
+  }
 `;
 
 const Yay = styled.span`
@@ -149,6 +168,17 @@ const Error = styled.span`
   color: #f04438;
 `;
 
+const Check = styled.img`
+  height: 9px;
+  width: 13px;
+}
+`;
+
+const ClickableOverlay = styled.div`
+  min-height: 100%;
+  background: rgba(9, 30, 66, 0.54);
+`;
+
 export function Select({
   children,
   options,
@@ -158,11 +188,21 @@ export function Select({
   error,
   hasError,
   disabled,
+  placeholder,
+  onChangee,
 }: SelectProps) {
   const [selected, setSelected] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-
+  const newOptions = ["All", ...options];
   const ty = useRef<HTMLInputElement>(null);
+
+  const closeDropdown = () => {
+    if (isOpen) {
+      setIsOpen(false);
+    }
+  };
+
+  const ref = useDetectClickOutside({ onTriggered: closeDropdown });
 
   return (
     <SelectContainer>
@@ -176,20 +216,28 @@ export function Select({
         <SelectInput disabled={disabled} type={"text"} />
         {icon && <Icon src={icon} />}
 
-        <Label style={{ color: !selected ? "#667085" : "#101828" }}>
-          {!selected ? "Select team member" : selected}
+        <Label
+          style={{
+            color: !selected || selected === "All" ? "#667085" : "#101828",
+          }}
+        >
+          {!selected || selected === "All" ? placeholder : selected}
         </Label>
-        <DownArrow onClick={() => setIsOpen(!isOpen)} src="/icons/down.svg" />
+        <Arrow
+          onClick={() => setIsOpen(!isOpen)}
+          src={!isOpen ? "/icons/down.svg" : "/icons/up.svg"}
+        />
 
         {isOpen && (
-          <DropDownListContainer>
+          <DropDownListContainer ref={ref}>
             <DropDownList>
-              {options.map((option) => {
+              {newOptions.map((option) => {
                 return (
                   <ListItem
                     onClick={() => {
                       setIsOpen(false);
                       setSelected(option);
+                      onChangee(option);
 
                       if (ty.current != null) {
                         ty.current.blur();
@@ -198,6 +246,7 @@ export function Select({
                     key={option}
                   >
                     {option}
+                    <Check src="/icons/check.svg" />
                   </ListItem>
                 );
               })}
