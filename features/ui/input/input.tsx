@@ -9,12 +9,20 @@ type error = {
   message: string;
 };
 
+// export interface InputStyleProps
+//   extends React.ComponentPropsWithoutRef<"input"> {
+//   onChange?(name: string): any;
+// }
+
 export interface InputProps extends React.ComponentPropsWithoutRef<"div"> {
   hint?: string;
   label?: string;
   //   icon?: "leading" | "trailing";
   disabled?: boolean;
   error?: error;
+  icon?: string;
+  placeholder?: string;
+  onChangee(name: string): any;
 }
 
 const regular = (p: InputProps) => {
@@ -49,8 +57,10 @@ const test = (p: InputProps) => {
 const InputContainer = styled.div<InputProps>`
   box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
   border-radius: 8px;
-  width: 320px;
+  width: 100%;
+  height: 44px;
   padding: 10px 14px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   background: ${(props) => props.disabled && "#F9FAFB"};
@@ -108,13 +118,32 @@ const ErrorMessage = styled.p`
   color: #f04438;
 `;
 
-export function Input({ children, hint, label, disabled, error }: InputProps) {
+export function Input({
+  children,
+  hint,
+  label,
+  disabled,
+  error,
+  onChangee,
+  icon,
+  placeholder,
+}: InputProps) {
   return (
     <>
       <Label>{label}</Label>
-      <InputContainer error={error} disabled={disabled} tabIndex={1}>
-        <Icon src="/icons/mail.svg" />
-        <InputStyles disabled={disabled} placeholder="olivia@untitledui.com" />
+      <InputContainer
+        onChangee={onChangee}
+        error={error}
+        disabled={disabled}
+        tabIndex={1}
+      >
+        {icon && <Icon src={icon} />}
+
+        <InputStyles
+          onChange={(e) => onChangee(e.target.value)}
+          disabled={disabled}
+          placeholder={placeholder}
+        />
         {error?.isError && <ErrorIcon src="/icons/error.svg" />}
       </InputContainer>
       {error?.isError ? (
