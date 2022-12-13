@@ -13,6 +13,7 @@ export interface SelectProps extends React.ComponentPropsWithoutRef<"div"> {
   hasError?: boolean;
   disabled?: boolean;
   placeholder?: string;
+  selected?: string;
   ref?: any;
   onChangee(name: string): any;
 }
@@ -189,9 +190,10 @@ export function Select({
   hasError,
   disabled,
   placeholder,
+  selected,
   onChangee,
 }: SelectProps) {
-  const [selected, setSelected] = useState("");
+  // const [selected, setSelected] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const newOptions = ["All", ...options];
   const ty = useRef<HTMLInputElement>(null);
@@ -236,7 +238,7 @@ export function Select({
                   <ListItem
                     onClick={() => {
                       setIsOpen(false);
-                      setSelected(option);
+                      // setSelected(option);
                       onChangee(option);
 
                       if (ty.current != null) {
