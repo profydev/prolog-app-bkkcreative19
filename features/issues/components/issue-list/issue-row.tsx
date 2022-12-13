@@ -49,6 +49,7 @@ const ErrorType = styled.span`
 
 export function IssueRow({ projectLanguage, issue }: IssueRowProps) {
   const { name, message, stack, level, numEvents, numUsers } = issue;
+  console.log(projectLanguage);
   const firstLineOfStackTrace = stack.split("\n")[1];
   return (
     <Row>
