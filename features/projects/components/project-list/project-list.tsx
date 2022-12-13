@@ -52,7 +52,6 @@ const override: CSSProperties = {
 
 export function ProjectList() {
   const { data, isLoading, isError, error } = useProjects();
-  console.log(data);
   if (isLoading) {
     return (
       <ClipLoader

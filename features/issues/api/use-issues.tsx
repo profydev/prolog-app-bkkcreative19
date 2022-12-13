@@ -8,6 +8,7 @@ async function getIssues(page: number) {
   const { data } = await axios.get(
     `https://prolog-api.profy.dev/issue?page=${page}`
   );
+
   return data;
 }
 

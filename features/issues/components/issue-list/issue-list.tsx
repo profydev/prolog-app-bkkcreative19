@@ -7,9 +7,10 @@ import { ProjectLanguage, useProjects } from "@features/projects";
 import { color, space, textFont } from "@styles/theme";
 import { IssueRow } from "./issue-row";
 import { Select } from "@features/ui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@features/ui/input";
 import { Issue } from "@features/issues/types/issue.types";
+import capitalize from "lodash/capitalize";
 
 const Container = styled.div`
   background: white;
@@ -70,17 +71,35 @@ const PageNumber = styled.span`
 export function IssueList() {
   const router = useRouter();
 
-  const [filterSolved, setFilterSolved] = useState("");
-  const [filterLevel, setFilterLevel] = useState("");
-  const [search, setSearch] = useState("");
+  const [filterStatus, setFilterStatus] = useState(router.query["status"]);
+  const [filterLevel, setFilterLevel] = useState(router.query["level"]);
+  const [search, setSearch] = useState(router.query["search"]);
+
+  const [query, setQuery] = useState<{
+    status?: string;
+    page?: number;
+    search?: string;
+    level?: string;
+  }>({
+    ...router.query,
+  });
+
+  useEffect(() => {
+    router.push({
+      pathname: router.pathname,
+      query: query,
+    });
+  }, [query]);
 
   const page = Number(router.query.page || 1);
 
-  const navigateToPage = (newPage: number) =>
-    router.push({
-      pathname: router.pathname,
-      query: { page: newPage },
-    });
+  const navigateToPage = (newPage: number) => {
+    setQuery({ ...query, page: newPage });
+    // router.push({
+    //   pathname: router.pathname,
+    //   query: { page: newPage },
+    // });
+  };
 
   const issuesPage = useIssues(page);
   const projects = useProjects();
@@ -100,11 +119,13 @@ export function IssueList() {
   }
 
   const handleChange = (test: any) => {
-    setFilterSolved(test);
-    router.query.solved = test;
+    setFilterStatus(test);
+
+    setQuery({ ...query, status: test.toLowerCase() });
+    // router.query.solved = test;
 
     if (test === "All") {
-      removeQueryParamsFromRouter(router, ["solved"]);
+      removeQueryParamsFromRouter(router, ["status"]);
     } else {
       router.push(router);
     }
@@ -112,7 +133,9 @@ export function IssueList() {
   };
   const handleChange1 = (test: any) => {
     setFilterLevel(test);
-    router.query.level = test;
+    // router.query.level = test;
+
+    setQuery({ ...query, level: test.toLowerCase() });
 
     if (test === "All") {
       removeQueryParamsFromRouter(router, ["level"]);
@@ -123,7 +146,10 @@ export function IssueList() {
 
   const handleChange2 = (test: any) => {
     setSearch(test);
-    router.query.search = test;
+    // router.query.search = test;
+
+    setQuery({ ...query, search: test.toLowerCase() });
+
     if (test === "") {
       removeQueryParamsFromRouter(router, ["search"]);
     } else {
@@ -141,12 +167,12 @@ export function IssueList() {
 
   const { items, meta } = issuesPage.data || {};
 
-  const filteredItems = filterSolvedItems(items, filterSolved);
+  console.log(items);
+
+  const filteredItems = filterSolvedItems(items, status);
   const yay = filterLevelItems(filteredItems, filterLevel, router);
 
-  const hj = filterSearch(yay, search);
-
-  console.log(hj);
+  const hj = filterSearch(yay, search, projectIdToLanguage);
 
   return (
     <Container>
@@ -155,11 +181,13 @@ export function IssueList() {
           onChangee={(e: any) => handleChange(e)}
           options={["Unresolved", "Resolved"]}
           placeholder="Status"
+          selected={capitalize(query?.["status"])}
         />
         <Select
           onChangee={(e: any) => handleChange1(e)}
           options={["Error", "Warning", "Info"]}
           placeholder="Level"
+          selected={capitalize(query?.["level"])}
         />
         <Input
           icon="/icons/search.svg"
@@ -231,11 +259,11 @@ const filterLevelItems = (items: any, filter: any, router: any) => {
   //   shallow: true,
   // });
 
-  if (filter === "Error") {
+  if (filter === "Error" || filter === "error") {
     test = items.filter((item: any) => item.level === "error");
-  } else if (filter === "Warning") {
+  } else if (filter === "Warning" || filter === "warning") {
     test = items.filter((item: any) => item.level === "warning");
-  } else if (filter === "Info") {
+  } else if (filter === "Info" || filter === "info") {
     test = items.filter((item: any) => item.level === "info");
   } else {
     return items;
@@ -244,14 +272,14 @@ const filterLevelItems = (items: any, filter: any, router: any) => {
   return test;
 };
 
-const filterSearch = (items: any, filter: any) => {
+const filterSearch = (items: any, filter: any, projectIdToLanguage: any) => {
   let test;
 
   if (filter) {
     test = items.filter((item: Issue) => {
       return filter.toLowerCase() === ""
         ? item
-        : item.name.toLowerCase().includes(filter.toLowerCase());
+        : projectIdToLanguage[item.projectId].includes(filter.toLowerCase());
     });
   } else {
     return items;
