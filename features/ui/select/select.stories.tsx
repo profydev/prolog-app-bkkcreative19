@@ -1,6 +1,7 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { Select } from "./select";
+import { SelectOption } from "./select-option";
 
 export default {
   title: "UI/Select",
@@ -11,21 +12,23 @@ export default {
   },
 } as ComponentMeta<typeof Select>;
 
+const arr = ["Error", "Warning", "Info"];
+
 const Template: ComponentStory<typeof Select> = (args) => (
   <div style={{ padding: 50 }}>
-    <Select
-      {...args}
-      options={[
-        "Phoenix Baker",
-        "Olivia Rhye",
-        "Lana Steiner",
-        "Demi Wilkinson",
-        "Candice Wu",
-        "Natali Craig",
-        "Drew Cano",
-      ]}
-      icon="/icons/user.svg"
-    />
+    <Select {...args}>
+      {arr.map((item: string) => {
+        return (
+          <SelectOption
+            handleSelect={() => console.log("hi")}
+            value={item}
+            key={item}
+          >
+            {item}
+          </SelectOption>
+        );
+      })}
+    </Select>
   </div>
 );
 

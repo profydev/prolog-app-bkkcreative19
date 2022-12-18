@@ -49,6 +49,7 @@ const Container = styled.div<{ isCollapsed: boolean }>`
 const FixedContainer = styled.div`
   ${containerStyles}
   position: fixed;
+  z-index: 100;
 `;
 
 const Header = styled.header`
