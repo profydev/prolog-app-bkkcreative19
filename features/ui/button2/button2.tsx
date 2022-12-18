@@ -5,8 +5,9 @@ import { color } from "@styles/theme";
 export interface ButtonProps extends React.ComponentPropsWithoutRef<"button"> {
   variant?: "secondary" | "primary" | "gray" | "empty" | "empty-gray" | "error";
   size?: "small" | "medium" | "large" | "xlarge";
-  icon?: "leading" | "trailing";
-  disabled: boolean;
+  icon?: string;
+  iconPosition?: "leading" | "trailing";
+  disabled?: boolean;
 }
 
 const primaryStyles = () => {
@@ -139,6 +140,7 @@ const StyledButton = styled.button<ButtonProps>`
   cursor: pointer;
   display: flex;
   font-weight: 400;
+  width: 247px;
   align-items: center;
   gap: 9.67px;
   text-align: center;
@@ -146,10 +148,15 @@ const StyledButton = styled.button<ButtonProps>`
   user-select: none;
   border: 1px solid transparent;
 
+  @media (max-width: 750px) {
+    width: 100%;
+    order: 3;
+  }
+
   ${colorStyles}
 
-  & svg {
-    order: ${(p) => (p.icon === "leading" ? "" : "1")};
+  & img {
+    order: ${(p) => (p.iconPosition === "leading" ? "" : "1")};
     fill: none;
     stroke-width: 1.67px;
     stroke: currentColor;
@@ -191,6 +198,7 @@ export function Button2({
   size,
   icon,
   disabled,
+  iconPosition,
   ...props
 }: ButtonProps) {
   return (
@@ -199,8 +207,10 @@ export function Button2({
       variant={variant}
       size={size}
       icon={icon}
+      iconPosition={iconPosition}
       type="button"
     >
+      <img src={icon} />
       {children}
     </StyledButton>
   );

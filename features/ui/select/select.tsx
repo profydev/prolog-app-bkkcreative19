@@ -1,262 +1,254 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useRef,
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
 import styled, { css } from "styled-components";
-
+import { SelectContext, hi } from "./select-context";
 import { color } from "@styles/theme";
 import { useDetectClickOutside } from "react-detect-click-outside";
+import { pickChildByProps } from "../../../utils";
+import { StyledOption } from "./select-option";
+import { SelectDropdown } from "./select-dropdown";
+import { IoCloseOutline } from "react-icons/io5";
 
 export interface SelectProps extends React.ComponentPropsWithoutRef<"div"> {
-  options: Array<string>;
-  icon?: string;
-  label?: string;
-  hint?: string;
-  error?: string;
-  hasError?: boolean;
+  value?: string;
   disabled?: boolean;
+  handleSelect(name: string): any;
+  icon?: string;
+  className?: string;
   placeholder?: string;
-  selected?: string;
-  ref?: any;
-  onChangee(name: string): any;
+  options?: string[];
+  // onChangee(name: string): any;
 }
 
-const regular = (p: DropDownContainerProps) => {
-  return css`
-    border: 1px solid ${p.isOpen ? color("primary", 300) : color("gray", 300)};
-    outline: ${p.isOpen && " 4px solid #F9F5FF"};
+// const regular = (p: DropDownContainerProps) => {
+//   return css`
+//     border: 1px solid ${p.isOpen ? color("primary", 300) : color("gray", 300)};
+//     outline: ${p.isOpen && " 4px solid #F9F5FF"};
 
-    &:focus {
-      outline: 4px solid #f9f5ff;
-      border: 1px solid ${color("primary", 300)};
-    }
-  `;
-};
-const error = (p: DropDownContainerProps) => {
-  return css`
-    border: 1px solid ${color("error", 300)};
-    outline: ${p.isOpen && "none"} !important;
+//     &:focus {
+//       outline: 4px solid #f9f5ff;
+//       border: 1px solid ${color("primary", 300)};
+//     }
+//   `;
+// };
+// const error = (p: DropDownContainerProps) => {
+//   return css`
+//     border: 1px solid ${color("error", 300)};
+//     outline: ${p.isOpen && "none"} !important;
 
-    &:focus {
-      outline: 4px solid #fef3f2;
-    }
-  `;
-};
+//     &:focus {
+//       outline: 4px solid #fef3f2;
+//     }
+//   `;
+// };
 
-const SelectContainer = styled.div`
-  width: 320px;
-
-  & div input:disabled & div {
-    background: #d0d5dd;
-  }
-`;
-
-type DropDownContainerProps = {
-  isOpen: boolean;
-  isError?: boolean;
-};
-
-const test = (p: DropDownContainerProps) => {
-  if (!p.isError) {
-    return regular(p);
-  } else {
-    return error(p);
-  }
-};
-
-const DropDownContainer = styled("div")<DropDownContainerProps>`
-  display: flex;
-  align-items: center;
-  ${test}
-  width: 100%;
-  height: 44px;
-  margin: 6px auto;
-  padding: 10px 14px;
-  box-sizing: border-box;
+const StyledSelect = styled.div<SelectProps>`
   position: relative;
+  display: flex;
+  box-sizing: border-box;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  white-space: nowrap;
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  min-width: 160px;
+  width: 100%;
+  transition: border 0.2s ease 0s, color 0.2s ease-out 0s,
+    box-shadow 0.2s ease 0s;
   box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+  border: 1px solid #d0d5dd;
   border-radius: 8px;
-
-  & input {
-    position: absolute;
-    opacity: 0;
-    height: 0;
-    width: 0;
+  height: 44px;
+  padding: 10px 14px;
+  background-color: ${(props) => (props.disabled ? "#f0eef1" : "#fff")};
+  &:hover {
+    border-color: ${(props) => (props.disabled ? "#888888" : "#d6bbfb")};
   }
-`;
-
-const Label = styled.span`
-  font-size: 1rem;
-  font-weight: 500;
-
-  &:focus-within {
-    color: red;
-  }
-`;
-
-const SelectInput = styled.input`
-  border: none;
 
   &:focus {
-    border: none;
-    outline: none;
+    border-color: #d6bbfb;
+    outline: 4px solid #f9f5ff;
   }
 `;
 
-const Icon = styled.img`
-  margin-right: 11.33px;
-  display: block;
-`;
+type StyledValueProps = {
+  isPlaceholder: boolean;
+};
 
-const Arrow = styled.img`
-  cursor: pointer;
-  margin-left: auto;
-`;
+type StyledIconProps = {
+  size?: string;
+  visible: boolean;
+};
 
-const DropDownListContainer = styled("div")`
-  width: 320px;
-  position: absolute;
-  top: 3rem;
-  left: 0;
-`;
+export const StyledCloseIcon = styled.img``;
 
-const DropDownList = styled("ul")`
-  margin: 0;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  box-sizing: border-box;
-  box-shadow: 0px 12px 16px -4px rgba(16, 24, 40, 0.1),
-    0px 4px 6px -2px rgba(16, 24, 40, 0.05);
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 400;
-`;
+export const StyledIcon = styled.div<StyledIconProps>`
+  // position: absolute;
+  // right: 14px;
+  font-size: ${(props) => props.size};
+  // top: 50%;
+  // bottom: 0;
 
-const ListItem = styled("li")`
-  list-style: none;
-  cursor: pointer;
+    rotate(${(props) => (props.visible ? "180" : "0")}deg);
+  pointer-events: none;
+  transition: transform 200ms ease;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
+  justify-content: flex-end;
+  margin-left: .5rem;
+  color: #999999;
+`;
 
-  &:hover {
-    background: #f4ebff;
-
-    & img {
-      display: flex;
+const StyledValue = styled.div<StyledValueProps>`
+  display: inline-flex;
+  flex: 1;
+  height: 100%;
+  align-items: center;
+  line-height: 1;
+  padding: 0;
+  margin-right: 1.25rem;
+  font-size: 1rem;
+  color: "#888888";
+  width: calc(100% - 1.25rem);
+  ${StyledOption} {
+    border-radius: 0;
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+    color: inherit;
+    &:hover {
+      border-radius: inherit;
+      background-color: inherit;
+      padding: inherit;
+      margin: inherit;
+      color: inherit;
     }
   }
-
-  & img {
-    display: none;
-  }
+  ${({ isPlaceholder }) =>
+    isPlaceholder &&
+    css`
+      color: #bcbabb;
+    `}
 `;
 
-const Yay = styled.span`
-  font-weight: 500;
-  font-size: 14px;
-  color: #344054;
-`;
-const Hint = styled.span`
-  font-weight: 400;
-  font-size: 14px;
-  color: #667085;
-`;
+type yay = {
+  preventAllEvents: boolean;
+};
 
-const Error = styled.span`
-  font-weight: 400;
-  font-size: 14px;
-  color: #f04438;
-`;
-
-const Check = styled.img`
-  height: 9px;
-  width: 13px;
-}
-`;
-
-const ClickableOverlay = styled.div`
-  min-height: 100%;
-  background: rgba(9, 30, 66, 0.54);
-`;
+// interface hi {
+//   value: any;
+//   visible: any;
+//   updateValue: any;
+//   updateVisible: any;
+//   disableAll: any;
+// }
 
 export function Select({
   children,
-  options,
-  icon,
-  label,
-  hint,
-  error,
-  hasError,
-  disabled,
-  placeholder,
-  selected,
-  onChangee,
+  value: customValue,
+  disabled = false,
+  handleSelect,
+  icon: Icon = "/icons/down.svg",
+  className,
+  placeholder = "Choose one",
 }: SelectProps) {
-  // const [selected, setSelected] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const newOptions = ["All", ...options];
-  const ty = useRef<HTMLInputElement>(null);
+  // const [isOpen, setIsOpen] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [value, setValue] = useState("");
+
+  useEffect(() => {
+    if (customValue === undefined) return;
+    setValue(customValue);
+  }, [customValue]);
+
+  const updateVisible = useCallback((next) => {
+    setVisible(next);
+  }, []);
+
+  const updateValue = useCallback(
+    (next) => {
+      setValue(next);
+      if (typeof handleSelect === "function") {
+        handleSelect(next);
+      }
+      setVisible(false);
+    },
+    [handleSelect]
+  );
+
+  const clickHandler = (event: any) => {
+    event.preventDefault();
+    if (disabled) return;
+    setVisible(!visible);
+  };
+
+  const initialValue: hi = useMemo(
+    () => ({
+      value,
+      visible,
+      updateValue,
+      updateVisible,
+      disableAll: disabled,
+    }),
+    [visible, updateVisible, updateValue, disabled, value]
+  );
+
+  const selectedChild = useMemo(() => {
+    const [, optionChildren] = pickChildByProps(children, "value", value);
+    return React.Children.map(optionChildren, (child) => {
+      if (!React.isValidElement(child)) return null;
+      const el = React.cloneElement<yay>(child as React.ReactElement<any>, {
+        preventAllEvents: true,
+      });
+      return el;
+    });
+  }, [value, children]);
+  // const newOptions = ["All", ...options];
+  // const ty = useRef<HTMLInputElement>(null);
 
   const closeDropdown = () => {
-    if (isOpen) {
-      setIsOpen(false);
+    if (visible) {
+      setVisible(false);
     }
   };
 
   const ref = useDetectClickOutside({ onTriggered: closeDropdown });
 
   return (
-    <SelectContainer>
-      <Yay>{label}</Yay>
-      <DropDownContainer
-        ref={ty}
+    <SelectContext.Provider value={initialValue}>
+      <StyledSelect
+        ref={ref}
+        disabled={disabled}
+        className={className}
+        onClick={clickHandler}
         tabIndex={1}
-        isOpen={isOpen}
-        isError={hasError}
+        handleSelect={handleSelect}
+        // className={className}
+        // onClick={clickHandler}
       >
-        <SelectInput disabled={disabled} type={"text"} />
-        {icon && <Icon src={icon} />}
-
-        <Label
-          style={{
-            color: !selected || selected === "All" ? "#667085" : "#101828",
-          }}
-        >
-          {!selected || selected === "All" ? placeholder : selected}
-        </Label>
-        <Arrow
-          onClick={() => setIsOpen(!isOpen)}
-          src={!isOpen ? "/icons/down.svg" : "/icons/up.svg"}
-        />
-
-        {isOpen && (
-          <DropDownListContainer ref={ref}>
-            <DropDownList>
-              {newOptions.map((option) => {
-                return (
-                  <ListItem
-                    onClick={() => {
-                      setIsOpen(false);
-                      // setSelected(option);
-                      onChangee(option);
-
-                      if (ty.current != null) {
-                        ty.current.blur();
-                      }
-                    }}
-                    key={option}
-                  >
-                    {option}
-                    <Check src="/icons/check.svg" />
-                  </ListItem>
-                );
-              })}
-            </DropDownList>
-          </DropDownListContainer>
+        <StyledValue isPlaceholder={!value}>
+          {!value ? placeholder : selectedChild}
+        </StyledValue>
+        {value && (
+          <IoCloseOutline
+            onClick={() => {
+              handleSelect("");
+              setValue("");
+            }}
+            size={18}
+          />
         )}
-      </DropDownContainer>
-      {error ? <Error>{error}</Error> : <Hint>{hint}</Hint>}
-    </SelectContainer>
+        |
+        <StyledIcon visible={visible}>
+          <img src={Icon} />
+        </StyledIcon>
+        <SelectDropdown visible={visible}>{children}</SelectDropdown>
+      </StyledSelect>
+    </SelectContext.Provider>
   );
 }
