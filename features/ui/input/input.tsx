@@ -22,7 +22,7 @@ export interface InputProps extends React.ComponentPropsWithoutRef<"div"> {
   error?: error;
   icon?: string;
   placeholder?: string;
-  onChangee(name: string): any;
+  handleSelect(name: string): any;
 }
 
 const regular = (p: InputProps) => {
@@ -124,7 +124,7 @@ export function Input({
   label,
   disabled,
   error,
-  onChangee,
+  handleSelect,
   icon,
   placeholder,
 }: InputProps) {
@@ -133,7 +133,7 @@ export function Input({
       {label && <Label>{label}</Label>}
 
       <InputContainer
-        onChangee={onChangee}
+        handleSelect={handleSelect}
         error={error}
         disabled={disabled}
         tabIndex={1}
@@ -141,7 +141,7 @@ export function Input({
         {icon && <Icon src={icon} />}
 
         <InputStyles
-          onChange={(e) => onChangee(e.target.value)}
+          onChange={(e) => handleSelect(e.target.value)}
           disabled={disabled}
           placeholder={placeholder}
         />

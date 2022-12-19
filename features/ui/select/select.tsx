@@ -22,30 +22,7 @@ export interface SelectProps extends React.ComponentPropsWithoutRef<"div"> {
   className?: string;
   placeholder?: string;
   options?: string[];
-  // onChangee(name: string): any;
 }
-
-// const regular = (p: DropDownContainerProps) => {
-//   return css`
-//     border: 1px solid ${p.isOpen ? color("primary", 300) : color("gray", 300)};
-//     outline: ${p.isOpen && " 4px solid #F9F5FF"};
-
-//     &:focus {
-//       outline: 4px solid #f9f5ff;
-//       border: 1px solid ${color("primary", 300)};
-//     }
-//   `;
-// };
-// const error = (p: DropDownContainerProps) => {
-//   return css`
-//     border: 1px solid ${color("error", 300)};
-//     outline: ${p.isOpen && "none"} !important;
-
-//     &:focus {
-//       outline: 4px solid #fef3f2;
-//     }
-//   `;
-// };
 
 const StyledSelect = styled.div<SelectProps>`
   position: relative;
@@ -56,7 +33,7 @@ const StyledSelect = styled.div<SelectProps>`
   user-select: none;
   white-space: nowrap;
   cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
-  min-width: 160px;
+  min-width: 180px;
   width: 100%;
   transition: border 0.2s ease 0s, color 0.2s ease-out 0s,
     box-shadow 0.2s ease 0s;
@@ -88,11 +65,9 @@ type StyledIconProps = {
 export const StyledCloseIcon = styled.img``;
 
 export const StyledIcon = styled.div<StyledIconProps>`
-  // position: absolute;
-  // right: 14px;
+
   font-size: ${(props) => props.size};
-  // top: 50%;
-  // bottom: 0;
+ 
 
     rotate(${(props) => (props.visible ? "180" : "0")}deg);
   pointer-events: none;
@@ -100,7 +75,7 @@ export const StyledIcon = styled.div<StyledIconProps>`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  margin-left: .5rem;
+  margin-left: .4rem;
   color: #999999;
 `;
 
@@ -125,7 +100,7 @@ const StyledValue = styled.div<StyledValueProps>`
       border-radius: inherit;
       background-color: inherit;
       padding: inherit;
-      margin: inherit;
+
       color: inherit;
     }
   }
@@ -235,15 +210,19 @@ export function Select({
           {!value ? placeholder : selectedChild}
         </StyledValue>
         {value && (
-          <IoCloseOutline
-            onClick={() => {
-              handleSelect("");
-              setValue("");
-            }}
-            size={18}
-          />
+          <>
+            {" "}
+            <IoCloseOutline
+              onClick={() => {
+                handleSelect("");
+                setValue("");
+              }}
+              size={18}
+            />{" "}
+            |
+          </>
         )}
-        |
+
         <StyledIcon visible={visible}>
           <img src={Icon} />
         </StyledIcon>

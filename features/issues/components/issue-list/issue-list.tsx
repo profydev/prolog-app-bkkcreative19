@@ -115,12 +115,23 @@ const PageNumber = styled.span`
   ${textFont("sm", "medium")}
 `;
 
+interface OptionProps {
+  arr: string[];
+  // onChangee(name: string): any;
+}
+
 export function IssueList() {
   const router = useRouter();
 
   const [filterStatus, setFilterStatus] = useState(router.query["status"]);
   const [filterLevel, setFilterLevel] = useState(router.query["level"]);
   const [search, setSearch] = useState(router.query["search"]);
+
+  const [filters, setFilters] = useState({
+    status: "",
+    level: "",
+    search: "",
+  });
 
   const [query, setQuery] = useState<{
     status?: string;
@@ -165,40 +176,16 @@ export function IssueList() {
     return <div>Error loading issuess: {issuesPage.error.message}</div>;
   }
 
-  const handleChange = (test: any) => {
-    setFilterStatus(test);
+  const handleChange = (name: any, value: any) => {
+    setFilters({
+      ...filters,
+      [name]: value,
+    });
 
-    setQuery({ ...query, status: test.toLowerCase() });
-    // router.query.solved = test;
+    setQuery({ ...query, [name]: value.toLowerCase() });
 
-    if (!test) {
-      removeQueryParamsFromRouter(router, ["status"]);
-    } else {
-      router.push(router);
-    }
-    // router.push(router);
-  };
-  const handleChange1 = (test: any) => {
-    setFilterLevel(test);
-    // router.query.level = test;
-    console.log(router);
-    setQuery({ ...query, level: test.toLowerCase() });
-
-    if (!test) {
-      removeQueryParamsFromRouter(router, ["level"]);
-    } else {
-      router.push(router);
-    }
-  };
-
-  const handleChange2 = (test: any) => {
-    setSearch(test);
-    // router.query.search = test;
-
-    setQuery({ ...query, search: test.toLowerCase() });
-
-    if (!test) {
-      removeQueryParamsFromRouter(router, ["search"]);
+    if (!value) {
+      removeQueryParamsFromRouter(router, [name]);
     } else {
       router.push(router);
     }
@@ -214,13 +201,33 @@ export function IssueList() {
 
   const { items, meta } = issuesPage.data || {};
 
-  const filteredItems = filterSolvedItems(items, filterStatus);
-  const yay = filterLevelItems(filteredItems, filterLevel, router);
+  const filteredStatus = filterSolvedItems(items, filters.status);
+  const filteredLevel = filterLevelItems(filteredStatus, filters.level, router);
 
-  const hj = filterSearch(yay, search, projectIdToLanguage);
+  const filteredItems = filterSearch(
+    filteredLevel,
+    filters.search,
+    projectIdToLanguage
+  );
 
   const arr = ["Error", "Warning", "Info"];
   const arr1 = ["Unresolved", "Resolved"];
+
+  const Options = ({ arr }: OptionProps) => {
+    return (
+      <>
+        {arr.map((item: string) => {
+          return (
+            <SelectOption value={item} key={item}>
+              {item}
+            </SelectOption>
+          );
+        })}
+      </>
+    );
+  };
+
+  // const options = (arr: string[]) => {};
 
   return (
     <>
@@ -234,34 +241,24 @@ export function IssueList() {
         </Button2>
         <FilterYay>
           <Select
-            handleSelect={(e: any) => handleChange(e)}
-            options={["Unresolved", "Resolved"]}
+            handleSelect={(value: any) => handleChange("status", value)}
             placeholder="Status"
           >
             {arr1.map((item: string) => {
               return (
-                <SelectOption
-                  handleSelect={(e: any) => handleChange(e)}
-                  value={item}
-                  key={item}
-                >
+                <SelectOption value={item} key={item}>
                   {item}
                 </SelectOption>
               );
             })}
           </Select>
           <Select
-            handleSelect={(e: any) => handleChange1(e)}
-            options={["Error", "Warning", "Info"]}
+            handleSelect={(value: any) => handleChange("level", value)}
             placeholder="Level"
           >
             {arr.map((item: string) => {
               return (
-                <SelectOption
-                  value={item}
-                  handleSelect={(e: any) => handleChange1(e)}
-                  key={item}
-                >
+                <SelectOption value={item} key={item}>
                   {item}
                 </SelectOption>
               );
@@ -270,7 +267,7 @@ export function IssueList() {
           <Input
             icon="/icons/search.svg"
             placeholder="Project Name"
-            onChangee={(e: any) => handleChange2(e)}
+            handleSelect={(value: any) => handleChange("search", value)}
           />
         </FilterYay>
       </FilterStyles>
@@ -285,7 +282,7 @@ export function IssueList() {
             </HeaderRow>
           </thead>
           <tbody>
-            {(hj || []).map((issue: any) => (
+            {(filteredItems || []).map((issue: any) => (
               <IssueRow
                 key={issue.id}
                 issue={issue}
@@ -334,10 +331,6 @@ const filterSolvedItems = (items: any, filter: any) => {
 };
 const filterLevelItems = (items: any, filter: any, router: any) => {
   let test;
-
-  // push({ query: { ...query, newParam: filter } }, undefined, {
-  //   shallow: true,
-  // });
 
   if (filter === "Error" || filter === "error") {
     test = items.filter((item: any) => item.level === "error");

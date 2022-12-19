@@ -19,11 +19,7 @@ const Template: ComponentStory<typeof Select> = (args) => (
     <Select {...args}>
       {arr.map((item: string) => {
         return (
-          <SelectOption
-            handleSelect={() => console.log("hi")}
-            value={item}
-            key={item}
-          >
+          <SelectOption value={item} key={item}>
             {item}
           </SelectOption>
         );
