@@ -176,20 +176,14 @@ export function IssueList() {
     return <div>Error loading issues: {issuesPage.error.message}</div>;
   }
 
+
   const test = (name: any, value: any) => {
     setFilters({
       ...filters,
       [name]: value,
     });
 
-    setQuery({ ...query, [name]: value.toLowerCase() });
-
-    if (!test) {
-      removeQueryParamsFromRouter(router, [name]);
-    } else {
-      router.push(router);
-    }
-  };
+ 
 
   const projectIdToLanguage = (projects.data || []).reduce(
     (prev, project) => ({
@@ -201,6 +195,7 @@ export function IssueList() {
 
   const { items, meta } = issuesPage.data || {};
 
+
   const filteredStatus = filterSolvedItems(items, filters.status);
   const filteredLevel = filterLevelItems(filteredStatus, filters.level, router);
 
@@ -209,6 +204,9 @@ export function IssueList() {
     filters.search,
     projectIdToLanguage
   );
+
+  const filteredItems = filterSolvedItems(items, filterStatus);
+  const yay = filterLevelItems(filteredItems, filterLevel, router);
 
   const arr = ["Error", "Warning", "Info"];
   const arr1 = ["Unresolved", "Resolved"];
@@ -229,6 +227,9 @@ export function IssueList() {
 
   // const options = (arr: string[]) => {};
 
+  const arr = ["Error", "Warning", "Info"];
+  const arr1 = ["Unresolved", "Resolved"];
+
   return (
     <>
       <FilterStyles>
@@ -241,24 +242,34 @@ export function IssueList() {
         </Button2>
         <FilterYay>
           <Select
+
             handleSelect={(value: any) => test("status", value)}
+
+            options={["Unresolved", "Resolved"]}
+
             placeholder="Status"
           >
             {arr1.map((item: string) => {
               return (
+
                 <SelectOption value={item} key={item}>
+
                   {item}
                 </SelectOption>
               );
             })}
           </Select>
           <Select
+
             handleSelect={(value: any) => test("level", value)}
+
             placeholder="Level"
           >
             {arr.map((item: string) => {
               return (
+
                 <SelectOption value={item} key={item}>
+
                   {item}
                 </SelectOption>
               );
@@ -267,7 +278,9 @@ export function IssueList() {
           <Input
             icon="/icons/search.svg"
             placeholder="Project Name"
+
             handleChange={(value: any) => test("search", value)}
+
           />
         </FilterYay>
       </FilterStyles>
@@ -282,7 +295,9 @@ export function IssueList() {
             </HeaderRow>
           </thead>
           <tbody>
+
             {(filteredItems || []).map((issue: any) => (
+
               <IssueRow
                 key={issue.id}
                 issue={issue}
