@@ -11,6 +11,8 @@ import { useEffect, useState } from "react";
 import { Input } from "@features/ui/input";
 import { Issue } from "@features/issues/types/issue.types";
 import capitalize from "lodash/capitalize";
+import { Button2 } from "@features/ui";
+import { SelectOption } from "@features/ui/select/select-option";
 
 const Container = styled.div`
   background: white;
@@ -20,15 +22,32 @@ const Container = styled.div`
     0px 2px 4px -2px rgba(16, 24, 40, 0.06);
   border-radius: ${space(2)};
   overflow: hidden;
+
+  @media (max-width: 750px) {
+    border: none;
+    box-shadow: none;
+  }
 `;
 
-const Table = styled.table`
+const Table = styled.div`
   width: 100%;
   border-collapse: collapse;
+  display: table;
+
+  @media (max-width: 750px) {
+    display: flex;
+    flex-direction: column;
+    border: none;
+    box-shadow: none;
+  }
 `;
 
 const HeaderRow = styled.tr`
   border-bottom: 1px solid ${color("gray", 200)};
+
+  @media (max-width: 750px) {
+    display: none;
+  }
 `;
 
 const HeaderCell = styled.th`
@@ -44,6 +63,10 @@ const PaginationContainer = styled.div`
   justify-content: space-between;
   padding: ${space(4, 6)};
   border-top: 1px solid ${color("gray", 200)};
+
+  @media (max-width: 750px) {
+    display: none;
+  }
 `;
 
 const PaginationButton = styled.button`
@@ -56,6 +79,30 @@ const PaginationButton = styled.button`
 
   &:not(:first-of-type) {
     margin-left: ${space(3)};
+  }
+`;
+
+const FilterStyles = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+
+  justify-content: space-between;
+
+  @media (max-width: 750px) {
+    flex-direction: column;
+    width: 100%;
+  }
+`;
+
+const FilterYay = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  @media (max-width: 750px) {
+    flex-direction: column;
+    width: 100%;
   }
 `;
 
@@ -124,7 +171,7 @@ export function IssueList() {
     setQuery({ ...query, status: test.toLowerCase() });
     // router.query.solved = test;
 
-    if (test === "All") {
+    if (!test) {
       removeQueryParamsFromRouter(router, ["status"]);
     } else {
       router.push(router);
@@ -134,10 +181,10 @@ export function IssueList() {
   const handleChange1 = (test: any) => {
     setFilterLevel(test);
     // router.query.level = test;
-
+    console.log(router);
     setQuery({ ...query, level: test.toLowerCase() });
 
-    if (test === "All") {
+    if (!test) {
       removeQueryParamsFromRouter(router, ["level"]);
     } else {
       router.push(router);
@@ -150,7 +197,7 @@ export function IssueList() {
 
     setQuery({ ...query, search: test.toLowerCase() });
 
-    if (test === "") {
+    if (!test) {
       removeQueryParamsFromRouter(router, ["search"]);
     } else {
       router.push(router);
@@ -167,75 +214,108 @@ export function IssueList() {
 
   const { items, meta } = issuesPage.data || {};
 
-  console.log(items);
-
-  const filteredItems = filterSolvedItems(items, status);
+  const filteredItems = filterSolvedItems(items, filterStatus);
   const yay = filterLevelItems(filteredItems, filterLevel, router);
 
   const hj = filterSearch(yay, search, projectIdToLanguage);
 
-  return (
-    <Container>
-      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-        <Select
-          onChangee={(e: any) => handleChange(e)}
-          options={["Unresolved", "Resolved"]}
-          placeholder="Status"
-          selected={capitalize(query?.["status"])}
-        />
-        <Select
-          onChangee={(e: any) => handleChange1(e)}
-          options={["Error", "Warning", "Info"]}
-          placeholder="Level"
-          selected={capitalize(query?.["level"])}
-        />
-        <Input
-          icon="/icons/search.svg"
-          placeholder="Project Name"
-          onChangee={(e: any) => handleChange2(e)}
-        />
-      </div>
+  const arr = ["Error", "Warning", "Info"];
+  const arr1 = ["Unresolved", "Resolved"];
 
-      <Table>
-        <thead>
-          <HeaderRow>
-            <HeaderCell>Issue</HeaderCell>
-            <HeaderCell>Level</HeaderCell>
-            <HeaderCell>Events</HeaderCell>
-            <HeaderCell>Users</HeaderCell>
-          </HeaderRow>
-        </thead>
-        <tbody>
-          {(hj || []).map((issue: any) => (
-            <IssueRow
-              key={issue.id}
-              issue={issue}
-              projectLanguage={projectIdToLanguage[issue.projectId]}
-            />
-          ))}
-        </tbody>
-      </Table>
-      <PaginationContainer>
-        <div>
-          <PaginationButton
-            onClick={() => navigateToPage(page - 1)}
-            disabled={page === 1}
+  return (
+    <>
+      <FilterStyles>
+        <Button2
+          iconPosition="leading"
+          icon="/icons/white-check.svg"
+          variant="primary"
+        >
+          Resolve selected issues
+        </Button2>
+        <FilterYay>
+          <Select
+            handleSelect={(e: any) => handleChange(e)}
+            options={["Unresolved", "Resolved"]}
+            placeholder="Status"
           >
-            Previous
-          </PaginationButton>
-          <PaginationButton
-            onClick={() => navigateToPage(page + 1)}
-            disabled={page === meta?.totalPages}
+            {arr1.map((item: string) => {
+              return (
+                <SelectOption
+                  handleSelect={(e: any) => handleChange(e)}
+                  value={item}
+                  key={item}
+                >
+                  {item}
+                </SelectOption>
+              );
+            })}
+          </Select>
+          <Select
+            handleSelect={(e: any) => handleChange1(e)}
+            options={["Error", "Warning", "Info"]}
+            placeholder="Level"
           >
-            Next
-          </PaginationButton>
-        </div>
-        <PageInfo>
-          Page <PageNumber>{meta?.currentPage}</PageNumber> of{" "}
-          <PageNumber>{meta?.totalPages}</PageNumber>
-        </PageInfo>
-      </PaginationContainer>
-    </Container>
+            {arr.map((item: string) => {
+              return (
+                <SelectOption
+                  value={item}
+                  handleSelect={(e: any) => handleChange1(e)}
+                  key={item}
+                >
+                  {item}
+                </SelectOption>
+              );
+            })}
+          </Select>
+          <Input
+            icon="/icons/search.svg"
+            placeholder="Project Name"
+            onChangee={(e: any) => handleChange2(e)}
+          />
+        </FilterYay>
+      </FilterStyles>
+      <Container>
+        <Table>
+          <thead>
+            <HeaderRow>
+              <HeaderCell>Issue</HeaderCell>
+              <HeaderCell>Level</HeaderCell>
+              <HeaderCell>Events</HeaderCell>
+              <HeaderCell>Users</HeaderCell>
+            </HeaderRow>
+          </thead>
+          <tbody>
+            {(hj || []).map((issue: any) => (
+              <IssueRow
+                key={issue.id}
+                issue={issue}
+                projectLanguage={projectIdToLanguage[issue.projectId]}
+              />
+            ))}
+          </tbody>
+        </Table>
+        <PaginationContainer>
+          <div>
+            <PaginationButton
+              onClick={() => navigateToPage(page - 1)}
+              disabled={page === 1}
+            >
+              Previous
+            </PaginationButton>
+            <PaginationButton
+              onClick={() => navigateToPage(page + 1)}
+              disabled={page === meta?.totalPages}
+            >
+              Next
+            </PaginationButton>
+          </div>
+          <PageInfo>
+            Page <PageNumber>{meta?.currentPage}</PageNumber> of{" "}
+            <PageNumber>{meta?.totalPages}</PageNumber>
+          </PageInfo>
+        </PaginationContainer>
+      </Container>
+    </>
   );
 }
 

@@ -57,8 +57,8 @@ const test = (p: InputProps) => {
 const InputContainer = styled.div<InputProps>`
   box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
   border-radius: 8px;
-  width: 100%;
   height: 44px;
+  width: 100%;
   padding: 10px 14px;
   box-sizing: border-box;
   display: flex;
@@ -88,7 +88,7 @@ const InputStyles = styled.input`
 `;
 
 const Icon = styled.img`
-  margin-right: 9.67px;
+  margin-right: 11px;
 `;
 
 const Label = styled.p`
@@ -130,7 +130,8 @@ export function Input({
 }: InputProps) {
   return (
     <>
-      <Label>{label}</Label>
+      {label && <Label>{label}</Label>}
+
       <InputContainer
         onChangee={onChangee}
         error={error}
