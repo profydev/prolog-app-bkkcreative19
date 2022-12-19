@@ -162,7 +162,7 @@ export function IssueList() {
 
   if (issuesPage.isError) {
     console.error(issuesPage.error);
-    return <div>Error loading issues: {issuesPage.error.message}</div>;
+    return <div>Error loading issuess: {issuesPage.error.message}</div>;
   }
 
   const handleChange = (test: any) => {
