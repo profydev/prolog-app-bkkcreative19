@@ -213,19 +213,19 @@ export function IssueList() {
   const arr = ["Error", "Warning", "Info"];
   const arr1 = ["Unresolved", "Resolved"];
 
-  // const Options = ({ arr }: OptionProps) => {
-  //   return (
-  //     <>
-  //       {arr.map((item: string) => {
-  //         return (
-  //           <SelectOption value={item} key={item}>
-  //             {item}
-  //           </SelectOption>
-  //         );
-  //       })}
-  //     </>
-  //   );
-  // };
+  const Options = ({ arr }: OptionProps) => {
+    return (
+      <>
+        {arr.map((item: string) => {
+          return (
+            <SelectOption value={item} key={item}>
+              {item}
+            </SelectOption>
+          );
+        })}
+      </>
+    );
+  };
 
   // const options = (arr: string[]) => {};
 
