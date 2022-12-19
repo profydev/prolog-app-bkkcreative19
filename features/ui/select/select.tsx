@@ -22,30 +22,7 @@ export interface SelectProps extends React.ComponentPropsWithoutRef<"div"> {
   className?: string;
   placeholder?: string;
   options?: string[];
-  // onChangee(name: string): any;
 }
-
-// const regular = (p: DropDownContainerProps) => {
-//   return css`
-//     border: 1px solid ${p.isOpen ? color("primary", 300) : color("gray", 300)};
-//     outline: ${p.isOpen && " 4px solid #F9F5FF"};
-
-//     &:focus {
-//       outline: 4px solid #f9f5ff;
-//       border: 1px solid ${color("primary", 300)};
-//     }
-//   `;
-// };
-// const error = (p: DropDownContainerProps) => {
-//   return css`
-//     border: 1px solid ${color("error", 300)};
-//     outline: ${p.isOpen && "none"} !important;
-
-//     &:focus {
-//       outline: 4px solid #fef3f2;
-//     }
-//   `;
-// };
 
 const StyledSelect = styled.div<SelectProps>`
   position: relative;
@@ -56,7 +33,7 @@ const StyledSelect = styled.div<SelectProps>`
   user-select: none;
   white-space: nowrap;
   cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
-  min-width: 160px;
+  min-width: 180px;
   width: 100%;
   transition: border 0.2s ease 0s, color 0.2s ease-out 0s,
     box-shadow 0.2s ease 0s;
@@ -140,14 +117,6 @@ type yay = {
   preventAllEvents: boolean;
 };
 
-// interface hi {
-//   value: any;
-//   visible: any;
-//   updateValue: any;
-//   updateVisible: any;
-//   disableAll: any;
-// }
-
 export function Select({
   children,
   value: customValue,
@@ -228,8 +197,6 @@ export function Select({
         onClick={clickHandler}
         tabIndex={1}
         handleSelect={handleSelect}
-        // className={className}
-        // onClick={clickHandler}
       >
         <StyledValue isPlaceholder={!value}>
           {!value ? placeholder : selectedChild}
@@ -240,7 +207,6 @@ export function Select({
               handleSelect("");
               setValue("");
             }}
-            size={18}
           />
         )}
         |
