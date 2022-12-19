@@ -7,7 +7,6 @@ interface SelectOptionProps extends React.ComponentPropsWithoutRef<"div"> {
   disabled?: boolean;
   className?: string;
   value: string;
-  handleSelect(name: string): any;
 }
 interface StyleSelectOptionProps extends React.ComponentPropsWithoutRef<"div"> {
   bgColor: string;
@@ -41,7 +40,6 @@ export function SelectOption({
   value: identValue,
   className = "",
   disabled = false,
-  handleSelect,
 }: SelectOptionProps) {
   const selectContext = useContext(SelectContext);
   // const { updateValue, value, disableAll } = useSelectContext();
@@ -77,7 +75,6 @@ export function SelectOption({
     event.preventDefault();
     if (identValue !== selectContext?.value) {
       selectContext?.updateValue(identValue);
-      handleSelect(identValue);
     }
   };
 
