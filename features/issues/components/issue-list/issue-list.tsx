@@ -398,3 +398,4 @@ const removeQueryParamsFromRouter = (
     { shallow: true }
   );
 };
+}
